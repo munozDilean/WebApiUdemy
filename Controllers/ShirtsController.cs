@@ -47,11 +47,20 @@ namespace WebAPIUdemy.Controllers
         [HttpPut("{id}")]
         [TypeFilter(typeof(Shirt_ValidateShirtIdFilterAttribute))]
         [Shirt_ValidateUpdateShirtFilter]
-        [Shirt_HandleUpdateExceptionsFilter]
+        [TypeFilter(typeof(Shirt_HandleUpdateExceptionsFilterAttribute))]
         public IActionResult UpdateShirt(int id, Shirt shirt)
         {
-    
-            ShirtRepository.UpdateShirt(shirt);
+            var shirtToUpdate = HttpContext.Items["shirt"] as Shirt;
+            // It will never be null beacuse we check in the Filters
+            shirtToUpdate.Brand = shirt.Brand;
+            shirtToUpdate.Price = shirt.Price;
+            shirtToUpdate.Size = shirt.Size;
+            shirtToUpdate.Color = shirt.Color;
+            shirtToUpdate.Gender = shirt.Gender;
+
+
+            // Elements are mark for updates, but are not updated officially until  this method is called. 
+            db.SaveChanges();
 
             return NoContent();
         }
@@ -60,10 +69,11 @@ namespace WebAPIUdemy.Controllers
         [TypeFilter(typeof(Shirt_ValidateShirtIdFilterAttribute))]
         public IActionResult DeleteShirt(int id)
         {
-            var shirt = ShirtRepository.GetShirtById(id);
-            ShirtRepository.DeleteShirt(id);
+            var shirtToDelete = HttpContext.Items["shirt"] as Shirt; // will never be null
+            db.Shirts.Remove(shirtToDelete);
+            db.SaveChanges();
 
-            return Ok(shirt);
+            return Ok(shirtToDelete);
         }
     }
 }
