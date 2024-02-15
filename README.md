@@ -7,3 +7,5 @@
 * Tools
 * Design
 * MSSQL I think
+## How to run
+Use command `dotnet run` to run. hit `CTRL+C` to stop server. Need to have the MSSQL server running for it to work as well. 
